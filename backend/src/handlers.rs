@@ -41,8 +41,9 @@ where
 #[utoipa::path(
     post,
     path = "/todos",
+    request_body = CreateTodo,
     responses(
-        (status = CREATED, description = "Created Todo found successfully", body = Todo),
+        (status = CREATED, description = "Created Todo successfully", body = Todo),
         (status = NOT_FOUND, description = "Todo couldn't be created")
     )
 )]
@@ -65,8 +66,8 @@ where
     get,
     path = "/todos/{id}",
     responses(
-        (status = 200, description = "Todo was found", body = Todo),
-        (status = NOT_FOUND, description = "Todo wasn't found")
+        (status = 200, description = "Todo found", body = Todo),
+        (status = NOT_FOUND, description = "Todo not found")
     ),
     params(
         ("id" = i32, Path, description = "todo id"),
@@ -84,8 +85,8 @@ pub async fn find_todo<T: TodoRepository>(
     get,
     path = "/todos",
     responses(
-        (status = 200, description = "Todos were found", body = Todo),
-        (status = NOT_FOUND, description = "Todos couldn't be found")
+        (status = 200, description = "Todos found", body = Todo),
+        (status = NOT_FOUND, description = "Todos not found")
     )
 )]
 pub async fn all_todo<T: TodoRepository>(
@@ -98,9 +99,10 @@ pub async fn all_todo<T: TodoRepository>(
 #[utoipa::path(
     patch,
     path = "/todos/{id}",
+    request_body = UpdateTodo,
     responses(
         (status = 200, description = "todo successfully updated", body = Todo),
-        (status = NOT_FOUND, description = "todo couldn't be updated")
+        (status = NOT_FOUND, description = "todo not updated")
     ),
     params(
         ("id" = i32, Path, description = "todo id"),
@@ -123,7 +125,7 @@ pub async fn update_todo<T: TodoRepository>(
     path = "/todos/{id}",
     responses(
         (status = 200, description = "todo successfully deleted", body = Todo),
-        (status = NO_CONTENT, description = "todo couldn't be deleted"),
+        (status = NO_CONTENT, description = "todo not deleted"),
         (status = INTERNAL_SERVER_ERROR, description = "Internal Server Error")
     ),
     params(

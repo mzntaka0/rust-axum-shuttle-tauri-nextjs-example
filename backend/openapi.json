@@ -17,7 +17,7 @@
         "operationId": "all_todo",
         "responses": {
           "200": {
-            "description": "Todos were found",
+            "description": "Todos found",
             "content": {
               "application/json": {
                 "schema": {
@@ -27,7 +27,7 @@
             }
           },
           "404": {
-            "description": "Todos couldn't be found"
+            "description": "Todos not found"
           }
         }
       },
@@ -36,9 +36,19 @@
           "handlers"
         ],
         "operationId": "create_todo",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTodo"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "201": {
-            "description": "Created Todo found successfully",
+            "description": "Created Todo successfully",
             "content": {
               "application/json": {
                 "schema": {
@@ -73,7 +83,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Todo was found",
+            "description": "Todo found",
             "content": {
               "application/json": {
                 "schema": {
@@ -83,7 +93,7 @@
             }
           },
           "404": {
-            "description": "Todo wasn't found"
+            "description": "Todo not found"
           }
         }
       },
@@ -116,7 +126,7 @@
             }
           },
           "204": {
-            "description": "todo couldn't be deleted"
+            "description": "todo not deleted"
           },
           "500": {
             "description": "Internal Server Error"
@@ -140,6 +150,16 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTodo"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "todo successfully updated",
@@ -152,7 +172,7 @@
             }
           },
           "404": {
-            "description": "todo couldn't be updated"
+            "description": "todo not updated"
           }
         }
       }

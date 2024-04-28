@@ -13,6 +13,8 @@ use sqlx::PgPool;
 use std::{env, sync::Arc};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
+use hyper::header::CONTENT_TYPE;
+use tower_http::cors::{Any, CorsLayer, Orgin}
 
 #[utoipa::path(
     get,
@@ -79,6 +81,12 @@ where
                 .patch(update_todo::<T>),
         )
         .layer(Extension(Arc::new(repository)))
+        .layer(
+            CorsLayer::new()
+            .allow_origin(Origin::extract("http://localhost:3000".parse().unwrap()))
+            .allow_methods(Any)
+            .allow_headers(vec![CONTENT_TYPE])
+            )
 }
 
 async fn root() -> &'static str {
