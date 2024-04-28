@@ -2,6 +2,7 @@ use axum::async_trait;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use thiserror::Error;
+use utoipa::ToSchema;
 use validator::Validate;
 
 #[derive(Debug, Error)]
@@ -24,20 +25,20 @@ where
     async fn delete(&self, id: i32) -> anyhow::Result<()>;
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, FromRow)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, FromRow, ToSchema)]
 pub struct Todo {
     id: i32,
     text: String,
     completed: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Validate)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Validate, ToSchema)]
 pub struct CreateTodo {
     #[validate(length(min = 1, max = 100, message = "Can not be empty and over text length"))]
     text: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Validate)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Validate, ToSchema)]
 pub struct UpdateTodo {
     #[validate(length(min = 1, max = 100, message = "Can not be empty and over text length"))]
     text: Option<String>,

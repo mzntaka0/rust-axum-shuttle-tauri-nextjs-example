@@ -7,6 +7,7 @@ use axum::{
 };
 use serde::de::DeserializeOwned;
 use std::sync::Arc;
+use utoipa;
 use validator::Validate;
 
 use crate::repositories::{CreateTodo, TodoRepository, UpdateTodo};
@@ -37,6 +38,14 @@ where
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/todos",
+    responses(
+        (status = CREATED, description = "Created Todo found successfully", body = Todo),
+        (status = NOT_FOUND, description = "Todo couldn't be created")
+    )
+)]
 pub async fn create_todo<T>(
     Extension(repository): Extension<Arc<T>>,
     ValidatedJson(payload): ValidatedJson<CreateTodo>,
@@ -52,6 +61,17 @@ where
     Ok((StatusCode::CREATED, Json(todo)))
 }
 
+#[utoipa::path(
+    get,
+    path = "/todos/{id}",
+    responses(
+        (status = 200, description = "Todo was found", body = Todo),
+        (status = NOT_FOUND, description = "Todo wasn't found")
+    ),
+    params(
+        ("id" = i32, Path, description = "todo id"),
+    )
+)]
 pub async fn find_todo<T: TodoRepository>(
     Path(id): Path<i32>,
     Extension(repository): Extension<Arc<T>>,
@@ -60,6 +80,14 @@ pub async fn find_todo<T: TodoRepository>(
     Ok((StatusCode::OK, Json(todo)))
 }
 
+#[utoipa::path(
+    get,
+    path = "/todos",
+    responses(
+        (status = 200, description = "Todos were found", body = Todo),
+        (status = NOT_FOUND, description = "Todos couldn't be found")
+    )
+)]
 pub async fn all_todo<T: TodoRepository>(
     Extension(repository): Extension<Arc<T>>,
 ) -> Result<impl IntoResponse, StatusCode> {
@@ -67,6 +95,17 @@ pub async fn all_todo<T: TodoRepository>(
     Ok((StatusCode::OK, Json(todo)))
 }
 
+#[utoipa::path(
+    patch,
+    path = "/todos/{id}",
+    responses(
+        (status = 200, description = "todo successfully updated", body = Todo),
+        (status = NOT_FOUND, description = "todo couldn't be updated")
+    ),
+    params(
+        ("id" = i32, Path, description = "todo id"),
+    )
+)]
 pub async fn update_todo<T: TodoRepository>(
     Extension(repository): Extension<Arc<T>>,
     Path(id): Path<i32>,
@@ -79,6 +118,18 @@ pub async fn update_todo<T: TodoRepository>(
     Ok((StatusCode::OK, Json(todo)))
 }
 
+#[utoipa::path(
+    delete,
+    path = "/todos/{id}",
+    responses(
+        (status = 200, description = "todo successfully deleted", body = Todo),
+        (status = NO_CONTENT, description = "todo couldn't be deleted"),
+        (status = INTERNAL_SERVER_ERROR, description = "Internal Server Error")
+    ),
+    params(
+        ("id" = i32, Path, description = "todo id"),
+    )
+)]
 pub async fn delete_todo<T: TodoRepository>(
     Path(id): Path<i32>,
     Extension(repository): Extension<Arc<T>>,
@@ -87,5 +138,5 @@ pub async fn delete_todo<T: TodoRepository>(
         .delete(id)
         .await
         .map(|_| StatusCode::NO_CONTENT)
-        .unwrap_or(StatusCode::NOT_FOUND)
+        .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
 }

@@ -2,15 +2,41 @@ mod handlers;
 mod repositories;
 
 use crate::handlers::{all_todo, create_todo, delete_todo, find_todo, update_todo};
-use crate::repositories::{TodoRepository, TodoRepositoryForDb};
+use crate::repositories::{CreateTodo, Todo, TodoRepository, TodoRepositoryForDb, UpdateTodo};
 use axum::{
     extract::Extension,
     routing::{get, post},
-    Router,
+    Json, Router,
 };
 use dotenv::dotenv;
 use sqlx::PgPool;
 use std::{env, sync::Arc};
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
+
+#[utoipa::path(
+    get,
+    path = "/docs/openapi.json",
+    responses(
+        (status = 200, description = "JSON file", body = ())
+    )
+)]
+async fn openapi() -> Json<utoipa::openapi::OpenApi> {
+    Json(ApiDoc::openapi())
+}
+
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        handlers::all_todo,
+        handlers::create_todo,
+        handlers::delete_todo,
+        handlers::find_todo,
+        handlers::update_todo
+    ),
+    components(schemas(Todo, CreateTodo, UpdateTodo))
+)]
+struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
@@ -39,7 +65,11 @@ fn create_app<T>(repository: T) -> Router
 where
     T: TodoRepository,
 {
+    let doc = ApiDoc::openapi().to_pretty_json().unwrap();
+    std::fs::write("openapi.json", doc.to_string()).unwrap_or(());
     Router::new()
+        .merge(SwaggerUi::new("/docs").url("/docs/openapi.json", ApiDoc::openapi()))
+        .route("/openapi.json", get(openapi))
         .route("/", get(root))
         .route("/todos", post(create_todo::<T>).get(all_todo::<T>))
         .route(
