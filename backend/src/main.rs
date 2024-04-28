@@ -5,16 +5,17 @@ use crate::handlers::{all_todo, create_todo, delete_todo, find_todo, update_todo
 use crate::repositories::{CreateTodo, Todo, TodoRepository, TodoRepositoryForDb, UpdateTodo};
 use axum::{
     extract::Extension,
+    http::HeaderValue,
     routing::{get, post},
     Json, Router,
 };
 use dotenv::dotenv;
+use hyper::header::CONTENT_TYPE;
 use sqlx::PgPool;
 use std::{env, sync::Arc};
+use tower_http::cors::{Any, CorsLayer};
 use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
-use hyper::header::CONTENT_TYPE;
-use tower_http::cors::{Any, CorsLayer, Orgin}
 
 #[utoipa::path(
     get,
@@ -83,10 +84,10 @@ where
         .layer(Extension(Arc::new(repository)))
         .layer(
             CorsLayer::new()
-            .allow_origin(Origin::extract("http://localhost:3000".parse().unwrap()))
-            .allow_methods(Any)
-            .allow_headers(vec![CONTENT_TYPE])
-            )
+                .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+                .allow_methods(Any)
+                .allow_headers(vec![CONTENT_TYPE]),
+        )
 }
 
 async fn root() -> &'static str {

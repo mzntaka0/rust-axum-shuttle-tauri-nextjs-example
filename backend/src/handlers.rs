@@ -85,7 +85,7 @@ pub async fn find_todo<T: TodoRepository>(
     get,
     path = "/todos",
     responses(
-        (status = 200, description = "Todos found", body = Todo),
+        (status = 200, description = "Todos found", body = Vec<Todo>),
         (status = NOT_FOUND, description = "Todos not found")
     )
 )]
