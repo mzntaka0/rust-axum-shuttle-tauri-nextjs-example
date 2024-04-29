@@ -16,16 +16,13 @@ const theme: Theme = createTheme({
       contrastText: "#FFFFFF",
     },
     background: {
-      default: "#1a202c",
+      default: "#2b3954",
       paper: "#FFFFFF",
     },
     text: {
       primary: "#EDF2F7",
       secondary: "#CBD5E0",
       disabled: "#FFFFFF",
-    },
-    common: {
-      white: "#EDF2F7",
     },
   },
   components: {

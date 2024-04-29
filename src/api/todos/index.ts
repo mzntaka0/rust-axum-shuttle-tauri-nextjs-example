@@ -4,13 +4,14 @@ import type * as Types from '../@types'
 export type Methods = {
   get: {
     status: 200
-    /** Todos were found */
-    resBody: Types.Todo
+    /** Todos found */
+    resBody: Types.Todo[]
   }
 
   post: {
     status: 201
-    /** Created Todo found successfully */
+    /** Created Todo successfully */
     resBody: Types.Todo
+    reqBody: Types.CreateTodo
   }
 }

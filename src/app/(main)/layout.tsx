@@ -1,7 +1,13 @@
 import React from "react";
+import type { Metadata } from "next";
 import { Stack } from "@mui/material";
 
 import Header from "./_layout/Header";
+
+export const metadata: Metadata = {
+  title: "my-todo",
+  description: "sample project for Rust(web and tauri) backend",
+};
 
 type Props = {
   children: React.ReactNode;

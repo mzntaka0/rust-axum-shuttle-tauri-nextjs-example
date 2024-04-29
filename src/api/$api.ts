@@ -17,12 +17,12 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
 
         return {
           /**
-           * @returns Todo was found
+           * @returns Todo found
            */
           get: (option?: { config?: T | undefined } | undefined) =>
             fetch<Methods_1hrbyhx['get']['resBody'], BasicHeaders, Methods_1hrbyhx['get']['status']>(prefix, prefix1, GET, option).json(),
           /**
-           * @returns Todo was found
+           * @returns Todo found
            */
           $get: (option?: { config?: T | undefined } | undefined) =>
             fetch<Methods_1hrbyhx['get']['resBody'], BasicHeaders, Methods_1hrbyhx['get']['status']>(prefix, prefix1, GET, option).json().then(r => r.body),
@@ -39,35 +39,35 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
           /**
            * @returns todo successfully updated
            */
-          patch: (option?: { config?: T | undefined } | undefined) =>
+          patch: (option: { body: Methods_1hrbyhx['patch']['reqBody'], config?: T | undefined }) =>
             fetch<Methods_1hrbyhx['patch']['resBody'], BasicHeaders, Methods_1hrbyhx['patch']['status']>(prefix, prefix1, PATCH, option).json(),
           /**
            * @returns todo successfully updated
            */
-          $patch: (option?: { config?: T | undefined } | undefined) =>
+          $patch: (option: { body: Methods_1hrbyhx['patch']['reqBody'], config?: T | undefined }) =>
             fetch<Methods_1hrbyhx['patch']['resBody'], BasicHeaders, Methods_1hrbyhx['patch']['status']>(prefix, prefix1, PATCH, option).json().then(r => r.body),
           $path: () => `${prefix}${prefix1}`,
         };
       },
       /**
-       * @returns Todos were found
+       * @returns Todos found
        */
       get: (option?: { config?: T | undefined } | undefined) =>
         fetch<Methods_1l17dp7['get']['resBody'], BasicHeaders, Methods_1l17dp7['get']['status']>(prefix, PATH0, GET, option).json(),
       /**
-       * @returns Todos were found
+       * @returns Todos found
        */
       $get: (option?: { config?: T | undefined } | undefined) =>
         fetch<Methods_1l17dp7['get']['resBody'], BasicHeaders, Methods_1l17dp7['get']['status']>(prefix, PATH0, GET, option).json().then(r => r.body),
       /**
-       * @returns Created Todo found successfully
+       * @returns Created Todo successfully
        */
-      post: (option?: { config?: T | undefined } | undefined) =>
+      post: (option: { body: Methods_1l17dp7['post']['reqBody'], config?: T | undefined }) =>
         fetch<Methods_1l17dp7['post']['resBody'], BasicHeaders, Methods_1l17dp7['post']['status']>(prefix, PATH0, POST, option).json(),
       /**
-       * @returns Created Todo found successfully
+       * @returns Created Todo successfully
        */
-      $post: (option?: { config?: T | undefined } | undefined) =>
+      $post: (option: { body: Methods_1l17dp7['post']['reqBody'], config?: T | undefined }) =>
         fetch<Methods_1l17dp7['post']['resBody'], BasicHeaders, Methods_1l17dp7['post']['status']>(prefix, PATH0, POST, option).json().then(r => r.body),
       $path: () => `${prefix}${PATH0}`,
     },

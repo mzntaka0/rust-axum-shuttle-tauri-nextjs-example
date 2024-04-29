@@ -4,7 +4,7 @@ import type * as Types from '../../@types'
 export type Methods = {
   get: {
     status: 200
-    /** Todo was found */
+    /** Todo found */
     resBody: Types.Todo
   }
 
@@ -18,5 +18,6 @@ export type Methods = {
     status: 200
     /** todo successfully updated */
     resBody: Types.Todo
+    reqBody: Types.UpdateTodo
   }
 }

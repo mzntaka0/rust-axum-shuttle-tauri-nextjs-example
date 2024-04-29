@@ -17,7 +17,7 @@ const Component: React.FC<Props> = (props) => {
         p: (theme: Theme) => theme.spacing(0, 3, 0, 3),
         backgroundColor: "main",
         backdropFilter: "blur(5.8px)",
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+        boxShadow: "0 15px 10px -12px rgba(0, 0, 0, 0.15)",
       }}
       spacing={4}
       direction="row"
