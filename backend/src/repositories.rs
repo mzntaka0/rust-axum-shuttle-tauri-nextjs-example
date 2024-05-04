@@ -59,28 +59,26 @@ impl TodoRepositoryForDb {
 #[async_trait]
 impl TodoRepository for TodoRepositoryForDb {
     async fn create(&self, payload: CreateTodo) -> anyhow::Result<Todo> {
-        let todo = sqlx::query_as!(
-            Todo,
+        let todo = sqlx::query_as::<_, Todo>(
             r#"
             insert into todos (text, completed)
             values ($1, false)
             returning *
             "#,
-            payload.text.clone()
         )
+        .bind(payload.text.clone())
         .fetch_one(&self.pool)
         .await?;
         Ok(todo)
     }
 
     async fn find(&self, id: i32) -> anyhow::Result<Todo> {
-        let todo = sqlx::query_as!(
-            Todo,
+        let todo = sqlx::query_as::<_, Todo>(
             r#"
             select * from todos where id=$1
             "#,
-            id
         )
+        .bind(id)
         .fetch_one(&self.pool)
         .await
         .map_err(|e| match e {
@@ -92,12 +90,11 @@ impl TodoRepository for TodoRepositoryForDb {
     }
 
     async fn all(&self) -> anyhow::Result<Vec<Todo>> {
-        let todos = sqlx::query_as!(
-            Todo,
+        let todos = sqlx::query_as::<_, Todo>(
             r#"
             select * from todos
             order by id desc;
-            "#
+            "#,
         )
         .fetch_all(&self.pool)
         .await?;
@@ -106,17 +103,16 @@ impl TodoRepository for TodoRepositoryForDb {
     }
 
     async fn update(&self, id: i32, payload: UpdateTodo) -> anyhow::Result<Todo> {
-        let todo = sqlx::query_as!(
-            Todo,
+        let todo = sqlx::query_as::<_, Todo>(
             r#"
             update todos set text=coalesce($1, text), completed=coalesce($2, completed)
             where id=$3
             returning *
             "#,
-            payload.text,
-            payload.completed,
-            id
         )
+        .bind(payload.text)
+        .bind(payload.completed)
+        .bind(id)
         .fetch_one(&self.pool)
         .await?;
 
@@ -124,12 +120,12 @@ impl TodoRepository for TodoRepositoryForDb {
     }
 
     async fn delete(&self, id: i32) -> anyhow::Result<()> {
-        sqlx::query!(
+        sqlx::query::<_>(
             r#"
             delete from todos where id=$1
             "#,
-            id
         )
+        .bind(id)
         .execute(&self.pool)
         .await
         .map_err(|e| match e {
@@ -209,7 +205,8 @@ mod test {
         let res = repository.find(created.id).await;
         assert!(res.is_err());
 
-        let todo_rows = sqlx::query!(r#"select * from todos where id=$1"#, todo.id)
+        let todo_rows = sqlx::query::<_>(r#"select * from todos where id=$1"#)
+            .bind(todo.id)
             .fetch_all(&pool)
             .await
             .expect("[delete] todo_labels fetch error");

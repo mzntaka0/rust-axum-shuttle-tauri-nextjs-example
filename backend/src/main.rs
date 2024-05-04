@@ -69,6 +69,11 @@ async fn main(
     #[shuttle_shared_db::Postgres] pool: PgPool,
     #[shuttle_runtime::Secrets] secrets: shuttle_runtime::SecretStore,
 ) -> shuttle_axum::ShuttleAxum {
+    println!("{:?}", &secrets.get("DATABASE_URL"));
+    dotenv::dotenv().ok();
+    let database_url = env::var("DATABASE_URL").expect("Expected DATABASE_URL in the environment");
+
+    println!("database_url {}", database_url);
     sqlx::migrate!()
         .run(&pool)
         .await
