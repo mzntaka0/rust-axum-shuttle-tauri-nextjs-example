@@ -67,13 +67,10 @@ struct ApiDoc;
 #[shuttle_runtime::main]
 async fn main(
     #[shuttle_shared_db::Postgres] pool: PgPool,
-    #[shuttle_runtime::Secrets] secrets: shuttle_runtime::SecretStore,
+    #[shuttle_runtime::Secrets] _secrets: shuttle_runtime::SecretStore,
 ) -> shuttle_axum::ShuttleAxum {
-    println!("{:?}", &secrets.get("DATABASE_URL"));
     dotenv::dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("Expected DATABASE_URL in the environment");
 
-    println!("database_url {}", database_url);
     sqlx::migrate!()
         .run(&pool)
         .await
@@ -81,22 +78,11 @@ async fn main(
     // logging
     let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
     env::set_var("RUST_LOG", log_level);
-    tracing_subscriber::fmt::init();
     dotenv().ok();
 
-    let database_url = &env::var("DATABASE_URL").expect("undefined [DATABASE_URL]");
-    tracing::debug!("starting to connect a database...");
-    let pool = PgPool::connect(database_url).await.expect(&format!(
-        "failed to connect to database, url is [{}]",
-        database_url
-    ));
     let repository = TodoRepositoryForDb::new(pool.clone());
     let app = create_app(repository);
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3005").await.unwrap();
 
-    tracing::debug!("listening on {:?}", listener);
-
-    //axum::serve(listener, app).await.unwrap();
     Ok(app.into())
 }
 

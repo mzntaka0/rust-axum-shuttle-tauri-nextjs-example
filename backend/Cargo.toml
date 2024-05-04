@@ -9,6 +9,7 @@ edition = "2021"
 anyhow = "1.0.81"
 axum = "0.7.5"
 dotenv = "0.15.0"
+globset = "0.4.6"
 http-body = "1.0.0"
 http-body-util = "0.1.1"
 hyper = { version = "1.2.0", features = ["full"] }
