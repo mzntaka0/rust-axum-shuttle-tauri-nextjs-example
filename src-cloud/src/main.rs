@@ -107,6 +107,11 @@ where
         .layer(
             CorsLayer::new()
                 .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+                .allow_origin(
+                    "https://rust-todo-two.vercel.app"
+                        .parse::<HeaderValue>()
+                        .unwrap(),
+                )
                 .allow_methods(Any)
                 .allow_headers(vec![CONTENT_TYPE]),
         )

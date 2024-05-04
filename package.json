@@ -6,7 +6,7 @@
     "dev": "run-p dev:*",
     "dev:next": "next dev",
     "dev:path": "pathpida --enableStatic --ignorePath .gitignore --watch",
-    "dev:openapi2aspida": "if [ -d src/api ]; then rm -r src/api; fi; openapi2aspida -i=./backend/openapi.json -o=src/api",
+    "dev:openapi2aspida": "if [ -d src/api ]; then rm -r src/api; fi; openapi2aspida -i=./src-cloud/openapi.json -o=src/api",
     "build": "pathpida --enableStatic --ignorePath .gitignore && next build",
     "start": "next start",
     "lint": "next lint",
