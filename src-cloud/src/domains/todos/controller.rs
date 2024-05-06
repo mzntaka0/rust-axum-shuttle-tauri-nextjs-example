@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::{
     async_trait,
     extract::{Extension, FromRequest, Path, Request},
@@ -6,15 +8,16 @@ use axum::{
     Json,
 };
 use serde::de::DeserializeOwned;
-use std::sync::Arc;
 use utoipa;
 use validator::Validate;
 
-use crate::repositories::{CreateTodo, TodoRepository, UpdateTodo};
+// TODO: move this to shared
+use todos::repository::{CreateTodo, TodoRepositoryTrait, UpdateTodo};
 
 #[derive(Debug)]
 pub struct ValidatedJson<T>(T);
 
+// TODO: move to more general place
 #[async_trait]
 impl<T, S> FromRequest<S> for ValidatedJson<T>
 where
@@ -47,12 +50,12 @@ where
         (status = NOT_FOUND, description = "Todo couldn't be created")
     )
 )]
-pub async fn create_todo<T>(
+pub async fn create<T>(
     Extension(repository): Extension<Arc<T>>,
     ValidatedJson(payload): ValidatedJson<CreateTodo>,
 ) -> Result<impl IntoResponse, StatusCode>
 where
-    T: TodoRepository,
+    T: TodoRepositoryTrait,
 {
     let todo = repository
         .create(payload)
@@ -73,7 +76,7 @@ where
         ("id" = i32, Path, description = "todo id"),
     )
 )]
-pub async fn find_todo<T: TodoRepository>(
+pub async fn find<T: TodoRepositoryTrait>(
     Path(id): Path<i32>,
     Extension(repository): Extension<Arc<T>>,
 ) -> Result<impl IntoResponse, StatusCode> {
@@ -89,7 +92,7 @@ pub async fn find_todo<T: TodoRepository>(
         (status = NOT_FOUND, description = "Todos not found")
     )
 )]
-pub async fn all_todo<T: TodoRepository>(
+pub async fn find_all<T: TodoRepositoryTrait>(
     Extension(repository): Extension<Arc<T>>,
 ) -> Result<impl IntoResponse, StatusCode> {
     let todo = repository.all().await.unwrap();
@@ -108,7 +111,7 @@ pub async fn all_todo<T: TodoRepository>(
         ("id" = i32, Path, description = "todo id"),
     )
 )]
-pub async fn update_todo<T: TodoRepository>(
+pub async fn update<T: TodoRepositoryTrait>(
     Extension(repository): Extension<Arc<T>>,
     Path(id): Path<i32>,
     ValidatedJson(payload): ValidatedJson<UpdateTodo>,
@@ -132,7 +135,7 @@ pub async fn update_todo<T: TodoRepository>(
         ("id" = i32, Path, description = "todo id"),
     )
 )]
-pub async fn delete_todo<T: TodoRepository>(
+pub async fn delete<T: TodoRepositoryTrait>(
     Path(id): Path<i32>,
     Extension(repository): Extension<Arc<T>>,
 ) -> StatusCode {
