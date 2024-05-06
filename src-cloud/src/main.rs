@@ -1,45 +1,10 @@
 mod domains;
+mod routes;
 
-use std::{env, sync::Arc};
-
-use axum::{extract::Extension, http::HeaderValue, routing::get, Json, Router};
 use dotenv::dotenv;
-use hyper::header::CONTENT_TYPE;
 use sqlx::PgPool;
-use tower_http::cors::{Any, CorsLayer};
-use utoipa::OpenApi;
-use utoipa_swagger_ui::SwaggerUi;
 
-use todos::repository::{CreateTodo, Todo, TodoRepositoryForDb, UpdateTodo};
-
-#[utoipa::path(
-    get,
-    path = "/docs/openapi.json",
-    responses(
-        (status = 200, description = "JSON file", body = ())
-    )
-)]
-async fn openapi() -> Json<utoipa::openapi::OpenApi> {
-    Json(ApiDoc::openapi())
-}
-
-#[derive(OpenApi)]
-#[openapi(
-    paths(
-        domains::todos::controller::find_all,
-        domains::todos::controller::create,
-        domains::todos::controller::delete,
-        domains::todos::controller::find,
-        domains::todos::controller::update
-    ),
-    components(schemas(Todo, CreateTodo, UpdateTodo))
-)]
-struct ApiDoc;
-
-#[derive(Clone)]
-pub struct AppState {
-    pub postgres: PgPool,
-}
+use crate::routes::create_app;
 
 #[shuttle_runtime::main]
 async fn main(
@@ -53,9 +18,6 @@ async fn main(
         .await
         .expect("Migrations failed :(");
 
-    // logging
-    let log_level = env::var("RUST_LOG").unwrap_or("info".to_string());
-    env::set_var("RUST_LOG", log_level);
     dotenv().ok();
 
     let app = create_app(pool);
@@ -63,33 +25,7 @@ async fn main(
     Ok(app.into())
 }
 
-fn create_app(pool: PgPool) -> Router {
-    let repository = TodoRepositoryForDb::new(pool.clone());
-    let doc = ApiDoc::openapi().to_pretty_json().unwrap();
-    std::fs::write("openapi.json", doc.to_string()).unwrap_or(());
-    Router::new()
-        .merge(SwaggerUi::new("/docs").url("/docs/openapi.json", ApiDoc::openapi()))
-        .route("/openapi.json", get(openapi))
-        .route("/", get(root))
-        .merge(domains::todos::route::routes(pool))
-        .layer(Extension(Arc::new(repository)))
-        .layer(
-            CorsLayer::new()
-                .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-                .allow_origin(
-                    "https://rust-todo-two.vercel.app"
-                        .parse::<HeaderValue>()
-                        .unwrap(),
-                )
-                .allow_methods(Any)
-                .allow_headers(vec![CONTENT_TYPE]),
-        )
-}
-
-async fn root() -> &'static str {
-    "Hello, world!"
-}
-
+// TODO: move to todos domain
 //#[cfg(test)]
 //mod test {
 //    use super::*;
