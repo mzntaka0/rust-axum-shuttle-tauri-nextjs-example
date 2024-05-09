@@ -12,9 +12,9 @@
     "/todos": {
       "get": {
         "tags": [
-          "handlers"
+          "domains::todos::controller"
         ],
-        "operationId": "all_todo",
+        "operationId": "find_all",
         "responses": {
           "200": {
             "description": "Todos found",
@@ -36,9 +36,9 @@
       },
       "post": {
         "tags": [
-          "handlers"
+          "domains::todos::controller"
         ],
-        "operationId": "create_todo",
+        "operationId": "create",
         "requestBody": {
           "content": {
             "application/json": {
@@ -69,9 +69,9 @@
     "/todos/{id}": {
       "get": {
         "tags": [
-          "handlers"
+          "domains::todos::controller"
         ],
-        "operationId": "find_todo",
+        "operationId": "find",
         "parameters": [
           {
             "name": "id",
@@ -102,9 +102,9 @@
       },
       "delete": {
         "tags": [
-          "handlers"
+          "domains::todos::controller"
         ],
-        "operationId": "delete_todo",
+        "operationId": "delete",
         "parameters": [
           {
             "name": "id",
@@ -138,9 +138,9 @@
       },
       "patch": {
         "tags": [
-          "handlers"
+          "domains::todos::controller"
         ],
-        "operationId": "update_todo",
+        "operationId": "update",
         "parameters": [
           {
             "name": "id",

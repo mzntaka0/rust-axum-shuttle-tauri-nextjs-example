@@ -6,7 +6,7 @@ use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 use crate::domains;
-use todos::repository::{CreateTodo, Todo, UpdateTodo};
+use todos::model::{CreateTodo, Todo, UpdateTodo};
 
 #[utoipa::path(
     get,
@@ -19,6 +19,7 @@ async fn openapi() -> Json<utoipa::openapi::OpenApi> {
     Json(ApiDoc::openapi())
 }
 
+// NOTE: wanna split into each domains and merge here
 #[derive(OpenApi)]
 #[openapi(
     paths(

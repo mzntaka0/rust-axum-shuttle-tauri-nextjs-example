@@ -1,8 +1,8 @@
-use std::sync::Arc;
+//use std::sync::Arc;
 
 use axum::{
     async_trait,
-    extract::{Extension, FromRequest, Path, Request},
+    extract::{FromRequest, Path, Request, State},
     http::StatusCode,
     response::IntoResponse,
     Json,
@@ -12,7 +12,11 @@ use utoipa;
 use validator::Validate;
 
 // TODO: move this to shared
-use todos::repository::{CreateTodo, TodoRepositoryTrait, UpdateTodo};
+use todos::model::{CreateTodo, UpdateTodo};
+use todos::repository::{TodoRepositoryForDb, TodoRepositoryTrait};
+use todos::service::{TodoService, TodoServiceTrait};
+
+use super::dependency::TodoDependency;
 
 #[derive(Debug)]
 pub struct ValidatedJson<T>(T);
@@ -51,13 +55,15 @@ where
     )
 )]
 pub async fn create<T>(
-    Extension(repository): Extension<Arc<T>>,
+    // TODO: Refactor generics
+    State(state): State<TodoDependency<TodoService<TodoRepositoryForDb>, TodoRepositoryForDb>>,
     ValidatedJson(payload): ValidatedJson<CreateTodo>,
 ) -> Result<impl IntoResponse, StatusCode>
 where
     T: TodoRepositoryTrait,
 {
-    let todo = repository
+    let todo = state
+        .todo_service
         .create(payload)
         .await
         .or(Err(StatusCode::NOT_FOUND))?;
@@ -78,9 +84,13 @@ where
 )]
 pub async fn find<T: TodoRepositoryTrait>(
     Path(id): Path<i32>,
-    Extension(repository): Extension<Arc<T>>,
+    State(state): State<TodoDependency<TodoService<TodoRepositoryForDb>, TodoRepositoryForDb>>,
 ) -> Result<impl IntoResponse, StatusCode> {
-    let todo = repository.find(id).await.or(Err(StatusCode::NOT_FOUND))?;
+    let todo = state
+        .todo_service
+        .find(id)
+        .await
+        .or(Err(StatusCode::NOT_FOUND))?;
     Ok((StatusCode::OK, Json(todo)))
 }
 
@@ -93,9 +103,9 @@ pub async fn find<T: TodoRepositoryTrait>(
     )
 )]
 pub async fn find_all<T: TodoRepositoryTrait>(
-    Extension(repository): Extension<Arc<T>>,
+    State(state): State<TodoDependency<TodoService<TodoRepositoryForDb>, TodoRepositoryForDb>>,
 ) -> Result<impl IntoResponse, StatusCode> {
-    let todo = repository.all().await.unwrap();
+    let todo = state.todo_service.find_all().await.unwrap();
     Ok((StatusCode::OK, Json(todo)))
 }
 
@@ -112,11 +122,12 @@ pub async fn find_all<T: TodoRepositoryTrait>(
     )
 )]
 pub async fn update<T: TodoRepositoryTrait>(
-    Extension(repository): Extension<Arc<T>>,
+    State(state): State<TodoDependency<TodoService<TodoRepositoryForDb>, TodoRepositoryForDb>>,
     Path(id): Path<i32>,
     ValidatedJson(payload): ValidatedJson<UpdateTodo>,
 ) -> Result<impl IntoResponse, StatusCode> {
-    let todo = repository
+    let todo = state
+        .todo_service
         .update(id, payload)
         .await
         .or(Err(StatusCode::NOT_FOUND))?;
@@ -137,9 +148,10 @@ pub async fn update<T: TodoRepositoryTrait>(
 )]
 pub async fn delete<T: TodoRepositoryTrait>(
     Path(id): Path<i32>,
-    Extension(repository): Extension<Arc<T>>,
+    State(state): State<TodoDependency<TodoService<TodoRepositoryForDb>, TodoRepositoryForDb>>,
 ) -> StatusCode {
-    repository
+    state
+        .todo_service
         .delete(id)
         .await
         .map(|_| StatusCode::NO_CONTENT)

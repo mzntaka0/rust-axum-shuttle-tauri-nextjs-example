@@ -5,6 +5,7 @@ use axum::{
 use sqlx::PgPool;
 
 use todos::repository::TodoRepositoryForDb;
+use todos::service::TodoService;
 
 use super::controller;
 use super::dependency::TodoDependency;
@@ -14,8 +15,10 @@ use super::dependency::TodoDependency;
 // injesting state itself is more flexible for changing repository impl
 // TODO: probably specifying TodoRepositoryForDb is not correct in terms of more general coding
 pub fn routes(pool: PgPool) -> Router {
+    let todo_repository = TodoRepositoryForDb::new(pool);
     let dependency = TodoDependency {
-        todo_repository: TodoRepositoryForDb::new(pool),
+        todo_service: TodoService::new(todo_repository.clone()),
+        todo_repository,
     };
     Router::new()
         .nest(

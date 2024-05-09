@@ -1,0 +1,8 @@
+[workspace]
+members = ["todos"]
+nested = true
+
+[profile.release]
+strip = true
+lto = true
+opt-level = "s"
