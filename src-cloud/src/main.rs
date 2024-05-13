@@ -9,7 +9,7 @@ use crate::routes::create_app;
 #[shuttle_runtime::main]
 async fn main(
     #[shuttle_shared_db::Postgres] pool: PgPool,
-    #[shuttle_runtime::Secrets] _secrets: shuttle_runtime::SecretStore,
+    #[shuttle_runtime::Secrets] secrets: shuttle_runtime::SecretStore,
 ) -> shuttle_axum::ShuttleAxum {
     dotenv::dotenv().ok();
 
@@ -20,7 +20,7 @@ async fn main(
 
     dotenv().ok();
 
-    let app = create_app(pool);
+    let app = create_app(pool, secrets);
 
     Ok(app.into())
 }

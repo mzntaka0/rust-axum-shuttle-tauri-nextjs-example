@@ -17,6 +17,7 @@ use super::dependency::TodoDependency;
 pub fn routes(pool: PgPool) -> Router {
     let todo_repository = TodoRepositoryForDb::new(pool);
     let dependency = TodoDependency {
+        // TODO: replace w/ Arc
         todo_service: TodoService::new(todo_repository.clone()),
         todo_repository,
     };

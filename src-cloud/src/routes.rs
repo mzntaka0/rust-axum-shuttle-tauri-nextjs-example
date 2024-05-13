@@ -38,7 +38,7 @@ pub struct AppState {
     pub postgres: PgPool,
 }
 
-pub fn create_app(pool: PgPool) -> Router {
+pub fn create_app(pool: PgPool, secrets: shuttle_runtime::SecretStore) -> Router {
     let doc = ApiDoc::openapi().to_pretty_json().unwrap();
     std::fs::write("openapi.json", doc.to_string()).unwrap_or(());
     Router::new()
@@ -49,6 +49,13 @@ pub fn create_app(pool: PgPool) -> Router {
         .layer(
             CorsLayer::new()
                 .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+                .allow_origin(
+                    secrets
+                        .get("REMOTE")
+                        .unwrap()
+                        .parse::<HeaderValue>()
+                        .unwrap(),
+                )
                 .allow_origin(
                     "https://rust-todo-two.vercel.app"
                         .parse::<HeaderValue>()

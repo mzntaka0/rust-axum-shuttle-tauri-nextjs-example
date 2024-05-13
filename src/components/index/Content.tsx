@@ -1,13 +1,36 @@
 "use client";
 import React from "react";
-import { Stack } from "@mui/material";
+import { Stack, Button, Typography } from "@mui/material";
 import { Theme } from "@mui/material/styles";
+import { invoke } from "@tauri-apps/api/core";
 
 import TodoCreator from "./TodoCreator";
 import TodoList from "./TodoList";
 
 const Content: React.FC = () => {
   const MTodoList = React.useMemo(() => TodoList, []);
+  const [isTauri, setIsTauri] = React.useState<boolean>(false);
+  const [message, setMessage] = React.useState<string>(
+    `not clicked, isTauri: ${isTauri}`,
+  );
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsTauri("isTauri" in window && !!window.isTauri);
+    }
+  }, []);
+
+  const handleClick = () => {
+    console.log("hoge");
+    invoke<{ invokeMessage: string }>("domains::todos::controller::find")
+      .then((res) => {
+        setMessage(res.invokeMessage);
+      })
+      .catch((err) => {
+        setMessage(`failed to fetch tauri: ${err}`);
+      });
+  };
+
   return (
     <Stack
       sx={{
@@ -25,6 +48,10 @@ const Content: React.FC = () => {
         }}
         spacing={3}
       >
+        <Button variant="contained" onClick={handleClick}>
+          invoke tauri
+        </Button>
+        <Typography>Message: {message}</Typography>
         <TodoCreator />
         <MTodoList />
       </Stack>
