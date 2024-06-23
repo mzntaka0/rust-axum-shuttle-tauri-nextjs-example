@@ -11,10 +11,9 @@ use serde::de::DeserializeOwned;
 use utoipa;
 use validator::Validate;
 
-// TODO: move this to shared
-use todos::model::{CreateTodo, UpdateTodo};
-use todos::repository::{TodoRepositoryForDb, TodoRepositoryTrait};
-use todos::service::{TodoService, TodoServiceTrait};
+use shared::todos::model::{CreateTodo, UpdateTodo};
+use shared::todos::repository::{TodoRepositoryForDb, TodoRepositoryTrait};
+use shared::todos::service::{TodoService, TodoServiceTrait};
 
 use super::dependency::TodoDependency;
 

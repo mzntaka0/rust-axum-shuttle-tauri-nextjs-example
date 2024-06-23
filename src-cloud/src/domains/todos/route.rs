@@ -4,8 +4,8 @@ use axum::{
 };
 use sqlx::PgPool;
 
-use todos::repository::TodoRepositoryForDb;
-use todos::service::TodoService;
+use shared::todos::repository::TodoRepositoryForDb;
+use shared::todos::service::TodoService;
 
 use super::controller;
 use super::dependency::TodoDependency;

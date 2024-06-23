@@ -1,5 +1,5 @@
-use todos::repository::TodoRepositoryTrait;
-use todos::service::TodoServiceTrait;
+use shared::todos::repository::TodoRepositoryTrait;
+use shared::todos::service::TodoServiceTrait;
 
 // TODO: should be depended on only service..?
 #[derive(Clone)]

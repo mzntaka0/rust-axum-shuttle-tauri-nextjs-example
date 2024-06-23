@@ -6,7 +6,7 @@ use utoipa::OpenApi;
 use utoipa_swagger_ui::SwaggerUi;
 
 use crate::domains;
-use todos::model::{CreateTodo, Todo, UpdateTodo};
+use shared::todos::model::{CreateTodo, Todo, UpdateTodo};
 
 #[utoipa::path(
     get,

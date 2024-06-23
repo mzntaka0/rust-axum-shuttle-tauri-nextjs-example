@@ -2,6 +2,9 @@ pub mod todos;
 
 use serde_json::{self, json, Value};
 use tauri::{command, Window};
+use log;
+
+use shared;
 
 // https://tauri.app/v1/guides/features/command/#complete-example
 
@@ -21,27 +24,29 @@ pub async fn call(
 }
 
 async fn _call(
-    window: Window,
+    _window: Window,
     url: String,
-    params: Value,
-    progress: Option<String>,
+    _params: Value,
+    _progress: Option<String>,
 ) -> shared::Result<Value> {
-    let func = if let Some(id) = progress {
-        Some(move |data: ChatMessage| {
-            let data = serde_json::to_string(&data).unwrap_or_default();
-            let val = format!("window['on_progress']['{id}']({{event:{data}}})");
-            window.eval(&val).ok();
-        })
-    } else {
-        None
-    };
+    //let func = if let Some(id) = progress {
+    //    Some(move |data: ChatMessage| {
+    //        let data = serde_json::to_string(&data).unwrap_or_default();
+    //        let val = format!("window['on_progress']['{id}']({{event:{data}}})");
+    //        window.eval(&val).ok();
+    //    })
+    //} else {
+    //    None
+    //};
     Ok(match url.as_ref() {
-        "/todos" => json!({"mock": "test"}),     })
+        "/todos" => json!({"mock": "test"}),
+        _ => json!({"mock": "other"})
+    })
 }
 
 #[command]
 pub fn set(key: String, value: String) {
-    shared::log::debug!("Set {}={}", key, value);
+    log::debug!("Set {}={}", key, value);
     std::env::set_var(key, value);
 }
 
