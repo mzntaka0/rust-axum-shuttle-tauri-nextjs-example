@@ -50,7 +50,7 @@ const Component: React.FC<Props> = (props) => {
           variant: "success",
         });
       },
-      onError: (err: any) => {
+      onError: () => {
         enqueueSnackbar("Failed to create a todo", {
           variant: "error",
         });

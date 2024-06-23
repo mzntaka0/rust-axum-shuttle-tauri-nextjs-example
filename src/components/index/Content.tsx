@@ -14,6 +14,8 @@ const Content: React.FC = () => {
     `not clicked, isTauri: ${isTauri}`,
   );
 
+  console.log('hoge hoge')
+
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       setIsTauri("isTauri" in window && !!window.isTauri);

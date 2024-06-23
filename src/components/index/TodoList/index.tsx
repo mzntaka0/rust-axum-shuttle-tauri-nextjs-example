@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { CircularProgress, Stack } from "@mui/material";
 import { useAspidaQuery } from "@aspida/react-query";
@@ -11,12 +13,15 @@ import TodoListItem from "./TodoListItem";
 
 const Component: React.FC = () => {
   const client = api(aspida(axiosApi));
-  //const client = api(aspidaFetch(tauriFetch));
+  //const tauriClient = api(aspidaFetch(tauriFetch));
   const { data: _todos } = useAspidaQuery(client.todos);
+  //const { data: _tauriTodos } = useAspidaQuery(tauriClient.todos);
 
   if (!_todos) {
     return <CircularProgress />;
   }
+
+  //console.log(_tauriTodos);
   const todos = _todos;
   console.log(todos);
   return (
